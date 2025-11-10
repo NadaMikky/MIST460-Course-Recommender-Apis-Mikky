@@ -1,1 +1,1 @@
-# MIST460-Course-Recommender-apis-NMikky
+# MIST460-Course-Recommender-Apis-Mikky
