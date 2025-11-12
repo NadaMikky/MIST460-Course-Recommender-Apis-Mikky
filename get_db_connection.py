@@ -4,7 +4,6 @@ from fastapi import HTTPException
 from dotenv import load_dotenv
 from pathlib import Path
 
-#Load .env from root directory (parent of web_apis)
 env_path = Path(__file__).parent.parent / '.env'
 load_dotenv(dotenv_path=env_path)
 
