@@ -3,6 +3,13 @@ import pyodbc
 from fastapi import FastAPI, HTTPException
 from dotenv import load_dotenv
 from pathlib import Path
+from fastapi.middleware.cors import CORSMiddleware
+from validate_user import router as validate_user_router
+from find_current_semester_course_offering import router as find_courses_router
+from find_prerequisites import router as find_prerequisites_router
+from enroll_student import router as enroll_student_router
+from drop_student import router as drop_student_router
+from get_student_enrolled_course_offerings import router as get_enrollments_router
 
 # -----------------------------
 # Load environment variables
@@ -10,7 +17,16 @@ from pathlib import Path
 env_path = Path(__file__).parent.parent / '.env'
 load_dotenv(dotenv_path=env_path)
 
-app = FastAPI(title="Course Recommender API")
+app = FastAPI(title="Course Recommender APIs")
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # -----------------------------
 # Database Connection
@@ -128,3 +144,7 @@ def enroll_student_api(student_id: str, course_offering_id: int):
 @app.delete("/drop_student/")
 def drop_student_api(student_id: str, course_offering_id: int):
     return drop_student(student_id, course_offering_id)
+
+@app.get("/")
+def read_root():
+    return {"message": "Course Recommender API is running"}

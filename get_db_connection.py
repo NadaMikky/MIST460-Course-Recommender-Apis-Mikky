@@ -7,13 +7,11 @@ from pathlib import Path
 env_path = Path(__file__).parent.parent / '.env'
 load_dotenv(dotenv_path=env_path)
 
-# Helper function to convert rows to dictionaries
-def _rows_to_dicts(cursor, rows):
-    """Convert pyodbc rows to list of dictionaries"""
-    if not cursor.description:
-        return []
-    cols = [c[0] for c in cursor.description]
-    return [dict(zip(cols, row)) for row in rows]
+def _rows_to_dicts(cursor):
+    """Convert query results to list of dictionaries"""
+    columns = [col[0] for col in cursor.description]
+    return [dict(zip(columns, row)) for row in cursor.fetchall()]
+
 
 # Dependency to get DB connection
 def get_db_connection():
