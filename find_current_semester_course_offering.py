@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Query, HTTPException
-import get_db_connection
+from get_db_connection import get_db_connection, _rows_to_dicts
 
 router = APIRouter()
 

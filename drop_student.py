@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Body, HTTPException
 from typing import Dict, Any
-import get_db_connection, _rows_to_dicts
+from get_db_connection import get_db_connection, _rows_to_dicts
 import pyodbc
 
 router = APIRouter()

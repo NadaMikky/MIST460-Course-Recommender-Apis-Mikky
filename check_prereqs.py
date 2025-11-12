@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Query, HTTPException
-import get_db_connection, _rows_to_dicts
+from get_db_connection import get_db_connection, _rows_to_dicts
 
 router = APIRouter()
 # 4. check_if_student_has_taken_all_prerequisites_for_course
