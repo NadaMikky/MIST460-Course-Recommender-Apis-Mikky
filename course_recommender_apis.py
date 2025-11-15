@@ -112,8 +112,8 @@ from drop_student import drop_student
 # ==========================================================
 
 @app.get("/validate_user/")
-def validate_user_api(student_id: str):
-    return validate_user(student_id)
+def validate_user_api(username: str, password: str):
+    return validate_user(username, password)
 
 
 @app.get("/check_prereqs/")
