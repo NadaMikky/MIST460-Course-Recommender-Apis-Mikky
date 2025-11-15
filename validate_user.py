@@ -6,25 +6,25 @@ import pyodbc
 router = APIRouter()
 
 # 1. validate_user
-@router.post("/validate_user")
+# @router.post("/validate_user")
 def validate_user(
-username: str,
-password: str
+    username: str,
+    password: str
 ):
 
-conn = get_db_connection()
-cursor = conn.cursor()
+    conn = get_db_connection()
+    cursor = conn.cursor()
 
-# Execute the stored procedure
-cursor.execute("{call procValidateUser(?, ?)}", (username, password) )
+    # Execute the stored procedure
+    cursor.execute("{call procValidateUser(?, ?)}", (username, password) )
 
-# Fetch results
-row = cursor. fetchone ()
-cursor. close()
-conn.close()
+    # Fetch results
+    row = cursor. fetchone ()
+    cursor. close()
+    conn.close()
 
-# Convert to list of dicts
-results = [
-{"AppUserID": row.AppUserID, "FullName": row. FullName}
-]
-return {"data": results}
+    # Convert to list of dicts
+    results = [
+    {"AppUserID": row.AppUserID, "FullName": row. FullName}
+    ]
+    return {"data": results}
