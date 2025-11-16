@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 # ==========================================================
 from validate_user import validate_user
 from check_prereqs import check_prereqs
-from find_current_semester_course_offering import find_current_semester_course_offerings
+from find_current_semester_course_offering import find_current_semester_course_offering
 from find_prerequisites import find_prerequisites
 from get_student_enrolled_course_offerings import get_student_enrolled_course_offerings
 from enroll_student import enroll_student

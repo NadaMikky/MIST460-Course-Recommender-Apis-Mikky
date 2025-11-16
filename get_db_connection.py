@@ -47,12 +47,11 @@ def get_db_connection():
             'Trusted_Connection=yes;'
             'Connection Timeout=30;'
             'Encrypt=yes;'
-        )        
-
-  try:
-        conn = pyodbc.connect(connection_string)
-        return conn
-    except pyodbc.Error as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        )
+        try:
+            conn = pyodbc.connect(connection_string)
+            return conn
+        except pyodbc.Error as e:
+            raise HTTPException(status_code=500, detail=str(e))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
