@@ -1,19 +1,23 @@
-from fastapi import APIRouter, Query, HTTPException
-from get_db_connection import get_db_connection, _rows_to_dicts
+from get_db_connection import get_db_connection
 
-router = APIRouter()
-
-# 3. find_prerequisites
-@router.get("/find_prerequisites")
-def find_prerequisites(subject_code: str = Query(...), course_number: str = Query(...)):
+def find_prerequisites(
+    subjectCode: str,
+    courseNumber: str
+):
     conn = get_db_connection()
-    cur = conn.cursor()
-    try:
-        cur.execute("EXEC dbo.procFindPrerequisites ?, ?", (subject_code, course_number))
-        rows = cur.fetchall()
-        return {"data": _rows_to_dicts(cur, rows)}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    finally:
-        cur.close()
-        conn.close()
+    cursor = conn.cursor()
+
+    # Execute the stored procedure
+    cursor.execute("{call procFindPrerequisites(?, ?)}", (subjectCode, courseNumber))
+
+    # Fetch results
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    # Convert to list of dicts
+    results = [
+        {"SubjectCode": row.SubjectCode, "CourseNumber": row.CourseNumber}
+        for row in rows
+    ]
+    return {"data": results}

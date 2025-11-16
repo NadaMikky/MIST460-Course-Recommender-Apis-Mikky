@@ -1,28 +1,23 @@
-from fastapi import APIRouter, Query, HTTPException
-from get_db_connection import get_db_connection, _rows_to_dicts
+from get_db_connection import get_db_connection
 
-router = APIRouter()
-
-# 6. get_student_enrolled_course_offerings
-@router.get("/get_student_enrolled_course_offerings")
-def get_student_enrolled_course_offerings(student_id: int = Query(...)):
+def get_student_enrolled_course_offerings(
+    studentID: int
+):
     conn = get_db_connection()
-    cur = conn.cursor()
-    try:
-        cur.execute("""
-            SELECT rco.RegistrationCourseOfferingID, rco.EnrollmentStatus, co.CourseOfferingID, co.CRN,
-                   co.CourseOfferingSemester, co.CourseOfferingYear, c.SubjectCode, c.CourseNumber, c.Title
-            FROM RegistrationCourseOffering rco
-            JOIN Registration r ON rco.RegistrationID = r.RegistrationID
-            JOIN CourseOffering co ON rco.CourseOfferingID = co.CourseOfferingID
-            JOIN Course c ON co.CourseID = c.CourseID
-            WHERE r.StudentID = ?
-            ORDER BY co.CourseOfferingYear DESC, co.CourseOfferingSemester;
-        """, (student_id,))
-        rows = cur.fetchall()
-        return {"data": _rows_to_dicts(cur, rows)}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    finally:
-        cur.close()
-        conn.close()
+    cursor = conn.cursor()
+
+    # Execute the stored procedure
+    cursor.execute("{call procGetStudentEnrolledCourseOfferings(?)}", studentID)
+
+    # Fetch results
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    # Convert to list of dicts
+    results = [
+        {"CourseOfferingID": row.CourseOfferingID, "CRN": row.CRN, "SubjectCode": row.SubjectCode, "CourseNumber": row.CourseNumber, 
+        "EnrollmentStatus": row.EnrollmentStatus, "LastUpdate": row.LastUpdate}
+        for row in rows
+    ]
+    return {"data": results}

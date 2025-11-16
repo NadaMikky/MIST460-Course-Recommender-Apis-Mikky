@@ -4,6 +4,7 @@ from fastapi import HTTPException
 from dotenv import load_dotenv
 from pathlib import Path
 
+#Load .env from root directory (parent of web_apis)
 env_path = Path(__file__).parent.parent / '.env'
 load_dotenv(dotenv_path=env_path)
 
@@ -48,7 +49,7 @@ def get_db_connection():
             'Encrypt=yes;'
         )        
 
-    try:
+  try:
         conn = pyodbc.connect(connection_string)
         return conn
     except pyodbc.Error as e:

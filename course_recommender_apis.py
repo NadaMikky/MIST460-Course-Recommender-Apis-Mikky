@@ -4,30 +4,19 @@ from fastapi import FastAPI, HTTPException
 from dotenv import load_dotenv
 from pathlib import Path
 from fastapi.middleware.cors import CORSMiddleware
-# from validate_user import router as validate_user_router
-from validate_user import validate_user
-from find_current_semester_course_offering import router as find_courses_router
-from find_prerequisites import router as find_prerequisites_router
-from enroll_student import router as enroll_student_router
-from drop_student import router as drop_student_router
-from get_student_enrolled_course_offerings import router as get_enrollments_router
 
-# -----------------------------
-# Load environment variables
-# -----------------------------
-env_path = Path(__file__).parent.parent / '.env'
-load_dotenv(dotenv_path=env_path)
+# ==========================================================
+#                Import Functionality Modules
+# ==========================================================
+from validate_user import validate_user
+from check_prereqs import check_prereqs
+from find_current_semester_course_offering import find_current_semester_course_offerings
+from find_prerequisites import find_prerequisites
+from get_student_enrolled_course_offerings import get_student_enrolled_course_offerings
+from enroll_student import enroll_student
+from drop_student import drop_student
 
 app = FastAPI(title="Course Recommender APIs")
-
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 # -----------------------------
 # Database Connection
@@ -80,34 +69,6 @@ def _rows_to_dicts(cursor, rows):
     cols = [c[0] for c in cursor.description] if cursor.description else []
     return [dict(zip(cols, row)) for row in rows]
 
-
-# -----------------------------
-# Test DB Connection
-# -----------------------------
-@app.get("/test-db")
-def test_db_connection():
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT TOP 5 name FROM sys.tables")
-        rows = cursor.fetchall()
-        return {"tables": _rows_to_dicts(cursor, rows)}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-# ==========================================================
-#                Import Functionality Modules
-# ==========================================================
-from validate_user import validate_user
-from check_prereqs import check_prereqs
-from find_current_semester_course_offering import find_current_semester_course_offerings
-from find_prerequisites import find_prerequisites
-from get_student_enrolled_course_offerings import get_student_enrolled_course_offerings
-from enroll_student import enroll_student
-from drop_student import drop_student
-
-
 # ==========================================================
 #                Define API Endpoints
 # ==========================================================
@@ -118,8 +79,8 @@ def validate_user_api(username: str, password: str):
 
 
 @app.get("/check_prereqs/")
-def check_prereqs_api(student_id: str, subject_code: str):
-    return check_prereqs(student_id, subject_code)
+def check_prereqs_api(studentID: int, subjectCode: str, courseNumber: str):
+    return check_prereqs(student_id, subject_code, course_number)
 
 
 @app.get("/find_current_semester_course_offerings/")
@@ -128,24 +89,33 @@ def find_current_semester_course_offerings_api(subject_code: str, course_number:
 
 
 @app.get("/find_prerequisites/")
-def find_prerequisites_api(subject_code: str):
-    return find_prerequisites(subject_code)
+def find_prerequisites_api(subject_code: str, CourseNumber: str):
+    return find_prerequisites(subject_code, CourseNumber)
 
 
 @app.get("/get_student_enrolled_course_offerings/")
-def get_student_enrolled_course_offerings_api(student_id: str):
-    return get_student_enrolled_course_offerings(student_id)
+def get_student_enrolled_course_offerings_api(studentID: str):
+    return get_student_enrolled_course_offerings(studentID)
 
 
 @app.post("/enroll_student/")
-def enroll_student_api(student_id: str, course_offering_id: int):
-    return enroll_student(student_id, course_offering_id)
+def enroll_student_api( studentID: int, courseOfferingID: int):
+    return enroll_student(studentID, courseOfferingID)
 
 
 @app.post("/drop_student/")
-def drop_student_api(student_id: str, course_offering_id: int):
-    return drop_student(student_id, course_offering_id)
+def drop_student_api(studentID: str, courseOfferingID: int):
+    return drop_student(studentID, courseOfferingID)
 
 @app.get("/")
 def read_root():
     return {"message": "Course Recommender API is running"}
+
+def main():
+    """Main entry point for the API server."""
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+
+
+if __name__ == "__main__":
+    main()
