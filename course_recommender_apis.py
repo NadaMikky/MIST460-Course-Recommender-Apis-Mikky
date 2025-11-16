@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 #                Import Functionality Modules
 # ==========================================================
 from validate_user import validate_user
-from check_prereqs import check_prereqs
+from check_prereqs import check_if_student_has_taken_all_prerequisites_for_course
 from find_current_semester_course_offering import find_current_semester_course_offerings
 from find_prerequisites import find_prerequisites
 from get_student_enrolled_course_offerings import get_student_enrolled_course_offerings
@@ -17,6 +17,15 @@ from enroll_student import enroll_student_in_course_offering
 from drop_student import drop_student_from_course_offering
 
 app = FastAPI(title="Course Recommender APIs")
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # -----------------------------
 # Database Connection
@@ -80,17 +89,17 @@ def validate_user_api(username: str, password: str):
 
 @app.get("/check_if_student_has_taken_all_prerequisites_for_course/")
 def check_prereqs_api(studentID: int, subjectCode: str, courseNumber: str):
-    return check_prereqs(studentID, subjectCode, courseNumber)er)
+    return check_if_student_has_taken_all_prerequisites_for_course(studentID, subjectCode, courseNumber)
 
 
 @app.get("/find_current_semester_course_offerings/")
-def find_current_semester_course_offerings_api(subjectCode: str, courseNumber: str):):
-    return find_current_semester_course_offering(subjectCode, courseNumber)er)
+def find_current_semester_course_offerings_api(subjectCode: str, courseNumber: str):
+    return find_current_semester_course_offerings(subjectCode, courseNumber)
 
 
 @app.get("/find_prerequisites/")
-def find_prerequisites_api(subjectCode: str, courseNumber: str)::
-    return find_prerequisites(subjectCode, courseNumber))
+def find_prerequisites_api(subjectCode: str, courseNumber: str):
+    return find_prerequisites(subjectCode, courseNumber)
 
 
 @app.get("/get_student_enrolled_course_offerings/")
@@ -99,19 +108,15 @@ def get_student_enrolled_course_offerings_api(studentID: int):
 
 
 @app.post("/enroll_student_in_course_offering/")
-def enroll_student_api(studentID: int, courseOfferingID: int)::
-    return enroll_student_in_course_offering(studentID, courseOfferingID), courseOfferingID)
+def enroll_student_api(studentID: int, courseOfferingID: int):
+    return enroll_student_in_course_offering(studentID, courseOfferingID)
 
 
 @app.post("/drop_student_from_course_offering/")
 def drop_student_api(studentID: int, courseOfferingID: int):
-    return drop_student_from_course_offering(studentID, courseOfferingID)ID, courseOfferingID)
+    return drop_student_from_course_offering(studentID, courseOfferingID)
+
 
 @app.get("/")
 def read_root():
     return {"message": "Course Recommender API is running"}
-    def main():    """Main entry point for the API server."""    
-    import uvicorn    
-    uvicorn.run(app, host="0.0.0.0", port=8000)
-    if __name__ == "__main__":    main()
-    

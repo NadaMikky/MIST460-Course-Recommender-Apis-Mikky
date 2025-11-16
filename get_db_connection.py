@@ -16,7 +16,6 @@ def _rows_to_dicts(cursor):
 
 # Dependency to get DB connection
 def get_db_connection():
-    # Get environment
     env = os.getenv('ENVIRONMENT', 'PRODUCTION').upper()
 
     if env == 'PRODUCTION':
@@ -37,7 +36,7 @@ def get_db_connection():
         )
     else:        
         DB_SERVER = "localhost"
-        DB_DATABASE = "Homework3Group1;"
+        DB_DATABASE = "Homework3Group1"
 
         connection_string = (
             'DRIVER={ODBC Driver 18 for SQL Server};'
@@ -48,10 +47,11 @@ def get_db_connection():
             'Connection Timeout=30;'
             'Encrypt=yes;'
         )
-        try:
-            conn = pyodbc.connect(connection_string)
-            return conn
-        except pyodbc.Error as e:
-            raise HTTPException(status_code=500, detail=str(e))
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+
+    try:
+        conn = pyodbc.connect(connection_string)
+        return conn
+    except pyodbc.Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
