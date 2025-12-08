@@ -1,20 +1,11 @@
 import os
+import get_job_descriptions
+import get_recommendation_for_job_description
 import pyodbc
-from fastapi import FastAPI, HTTPException
-from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException, Query
 from pathlib import Path
-from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Course Recommender APIs")
-
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 # Minimal DB helper kept (won't connect on import)
 def get_db_connection():
@@ -102,7 +93,18 @@ def drop_student_api(studentID: int, courseOfferingID: int):
     from drop_student import drop_student_from_course_offering
     return drop_student_from_course_offering(studentID, courseOfferingID)
 
+@app.get("/get_job_descriptions/")
+def get_job_descriptions_api():
+    return get_job_descriptions()
+
+@app.get("/get_recommendation_for_job_description")
+async def get_recommendations_endpoint(
+    jobDescription: str = Query(..., description="The job description text"),
+    studentID: int = Query(..., description="The student ID")
+    ):
+    return get_recommendation_for_job_description(jobDescription, studentID)
 
 @app.get("/")
 def read_root():
     return {"message": "Course Recommender API is running"}
+
